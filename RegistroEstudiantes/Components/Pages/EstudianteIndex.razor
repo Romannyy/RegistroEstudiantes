@@ -1,0 +1,128 @@
+﻿@page "/"
+@page "/Estudiante/Index"
+@inject EstudiantesService estudiantesService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+
+<PageTitle>Registro de Estudiantes</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        @* Cabecera con botón Crear *@
+        <div class="card-header d-flex justify-content-between">
+            <h5 class="card-title">Registro de Estudiantes</h5>
+            <a href="/Estudiante/Create" class="btn btn-primary">
+                <span class="bi bi-plus-square mt-3"></span> Crear
+            </a>
+        </div>
+
+        <div class="card-body">
+            @* Sección de Filtros (Inputs y Botones) *@
+            <div class="row align-items-center mb-3">
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija un filtro</option>
+                        <option value="Id">ID</option>
+                        <option value="Nombre">Nombre</option>
+                    </InputSelect>
+                </div>
+                <div class="col-4">
+                    <div class="input-group">
+                        <InputText class="form-control" @bind-Value="ValorFiltro" placeholder="Buscar..." />
+                        <button type="button" class="btn btn-outline-primary" @onclick="Buscar">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @* Tabla de Datos *@
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>EstudianteId</th>
+                        <th>Nombres</th>
+                        <th>Email</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var estudiante in ListaEstudiantes)
+                    {
+                        <tr>
+                            <td>@estudiante.EstudianteId</td>
+                            <td>@estudiante.Nombres</td>
+                            <td>@estudiante.Email</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <!-- EDITAR -->
+                                    <a href="/Estudiante/Edit/@estudiante.EstudianteId"
+                                       class="btn btn-sm btn-primary">
+                                        Editar
+                                    </a>
+
+                                    <!-- ELIMINAR -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger"
+                                            @onclick="() => Eliminar(estudiante.EstudianteId)">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </td>
+
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+            <label>Cantidad: @ListaEstudiantes.Count()</label>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        ListaEstudiantes = await estudiantesService.Listar(e => e.EstudianteId > 0);
+    }
+
+    private async Task Eliminar(int id)
+    {
+        var eliminado = await estudiantesService.Eliminar(id);
+
+        if (eliminado)
+        {
+            ListaEstudiantes = await estudiantesService.Listar(e => e.EstudianteId > 0);
+        }
+    }
+
+
+    private async Task Buscar()
+    {
+        if (ValorFiltro.Trim() != "")
+        {
+            if (Filtro == "Id" && int.TryParse(ValorFiltro, out int id))
+            {
+                ListaEstudiantes = await estudiantesService.Listar(e => e.EstudianteId == id);
+            }
+            else if (Filtro == "Nombre")
+            {
+                ListaEstudiantes = await estudiantesService.Listar(e =>
+                    e.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+        }
+        else
+        {
+            ListaEstudiantes = await estudiantesService.Listar(e => e.EstudianteId > 0);
+        }
+    }
+}
