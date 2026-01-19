@@ -11,8 +11,8 @@ using RegistroEstudiantes.DAL;
 namespace RegistroEstudiantes.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20260115222244_inicial")]
-    partial class inicial
+    [Migration("20260119014403_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,9 @@ namespace RegistroEstudiantes.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstudianteId"));
+
+                    b.Property<int>("Edad")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()

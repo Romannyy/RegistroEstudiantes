@@ -9,10 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Obtenemos el ConStr para usarlo en el contexto
+// Obtengo el ConStr para usarlo en el contexto
 var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
 
-// Agregamos el contexto al builder con el ConStr
+// Agrego el contexto al builder con el ConStr
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 
 // Inyección del service para Estudiantes

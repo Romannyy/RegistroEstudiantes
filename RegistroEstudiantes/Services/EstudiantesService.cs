@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RegistroEstudiantes.DAL;
 using RegistroEstudiantes.Models;
 using System.Linq.Expressions;
@@ -12,18 +11,32 @@ namespace RegistroEstudiantes.Services
         // MÉTODO GUARDAR
         public async Task<bool> Guardar(Estudiantes estudiante)
         {
+            // Validación de nombre duplicado
+            if (await ExisteNombre(estudiante.Nombres, estudiante.EstudianteId))
+                throw new Exception("No se puede registrar dos estudiantes con el mismo nombre.");
+
             if (!await Existe(estudiante.EstudianteId))
                 return await Insertar(estudiante);
             else
                 return await Modificar(estudiante);
         }
 
-        // MÉTODO EXISTE
+        // MÉTODO EXISTE POR ID
         private async Task<bool> Existe(int estudianteId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Estudiantes
                 .AnyAsync(e => e.EstudianteId == estudianteId);
+        }
+
+        // MÉTODO EXISTE POR NOMBRE 
+        private async Task<bool> ExisteNombre(string nombre, int estudianteId = 0)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.Estudiantes
+                .AnyAsync(e =>
+                    e.Nombres == nombre &&
+                    e.EstudianteId != estudianteId);
         }
 
         // MÉTODO INSERTAR
@@ -42,7 +55,6 @@ namespace RegistroEstudiantes.Services
             return await contexto.SaveChangesAsync() > 0;
         }
 
-   
         // MÉTODO BUSCAR
         public async Task<Estudiantes?> Buscar(int estudianteId)
         {
@@ -57,7 +69,6 @@ namespace RegistroEstudiantes.Services
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Estudiantes
-                .AsNoTracking()
                 .Where(e => e.EstudianteId == estudianteId)
                 .ExecuteDeleteAsync() > 0;
         }
@@ -73,4 +84,3 @@ namespace RegistroEstudiantes.Services
         }
     }
 }
-

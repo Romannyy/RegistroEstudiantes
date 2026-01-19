@@ -1,6 +1,4 @@
-﻿
-@page "/Estudiante/Edit/{EstudianteId:int}"
-@using RegistroEstudiantes.Services
+﻿@page "/Estudiante/Edit/{EstudianteId:int}"
 @inject EstudiantesService estudiantesService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
@@ -27,6 +25,11 @@ else
             <InputText class="form-control" @bind-Value="estudiante.Email" />
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">Edad</label>
+            <InputNumber class="form-control" @bind-Value="estudiante.Edad" />
+        </div>
+
         <button type="submit" class="btn btn-primary me-2">
             Guardar
         </button>
@@ -45,8 +48,9 @@ else
 }
 
 @code {
+
     [Parameter]
-    public int EstudianteId { get; set; } // Recibe el ID de la URL
+    public int EstudianteId { get; set; }
 
     public Estudiantes estudiante { get; set; } = new Estudiantes();
     public string Mensaje { get; set; } = string.Empty;
@@ -55,7 +59,6 @@ else
     {
         if (EstudianteId > 0)
         {
-            // LLAMADA AL SERVICE: Busca los datos para llenar el formulario
             var encontrado = await estudiantesService.Buscar(EstudianteId);
             if (encontrado != null)
                 estudiante = encontrado;
@@ -64,31 +67,25 @@ else
 
     public async Task Modificar()
     {
-        // LLAMADA AL SERVICE: Envía el objeto actualizado
-        var paso = await estudiantesService.Guardar(this.estudiante);
+        try
+        {
+            var paso = await estudiantesService.Guardar(estudiante);
 
-        if (paso)
-        {
-            navigationManager.NavigateTo("/Estudiante/Index"); 
+            if (paso)
+                navigationManager.NavigateTo("/Estudiante/Index");
         }
-        else
+        catch (Exception ex)
         {
-            Mensaje = "No se ha podido modificar correctamente"; 
+            // Mensaje devuelto por la lógica de negocio
+            Mensaje = ex.Message;
         }
     }
 
     public async Task Eliminar()
     {
-        // LLAMADA AL SERVICE: Borra al estudiante usando el parámetro de la ruta
         var eliminado = await estudiantesService.Eliminar(estudiante.EstudianteId);
 
         if (eliminado)
-        {
-            navigationManager.NavigateTo("/Estudiante/Index"); 
-        }
-        else
-        {
-            Mensaje = "No se ha podido eliminar correctamente"; 
-        }
+            navigationManager.NavigateTo("/Estudiante/Index");
     }
 }
