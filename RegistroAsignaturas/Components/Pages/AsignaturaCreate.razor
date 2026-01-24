@@ -1,0 +1,110 @@
+﻿@page "/Asignatura/Create"
+
+@inject AsignaturasService asignaturasService
+@inject NavigationManager navigationManager
+
+@rendermode InteractiveServer
+
+<PageTitle>Registro de Asignaturas</PageTitle>
+
+<EditForm Model="asignatura" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container">
+        <div class="card shadow-lg">
+
+            <!-- CABECERA -->
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Asignatura</h5>
+            </div>
+
+            <div class="card-body">
+
+                <!-- AsignaturaId -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>AsignaturaId</strong></label>
+                    <InputNumber class="form-control"
+                                 @bind-Value="asignatura.AsignaturaId"
+                                 readonly />
+                </div>
+
+                <!-- Nombre -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre</strong></label>
+                    <InputText class="form-control"
+                               @bind-Value="asignatura.Nombre" />
+                    <ValidationMessage For="@(() => asignatura.Nombre)" />
+                </div>
+
+                <!-- Código -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Código</strong></label>
+                    <InputText class="form-control"
+                               @bind-Value="asignatura.Codigo" />
+                    <ValidationMessage For="@(() => asignatura.Codigo)" />
+                </div>
+
+                <!-- Créditos -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Créditos</strong></label>
+                    <InputNumber class="form-control"
+                                 @bind-Value="asignatura.Creditos" />
+                    <ValidationMessage For="@(() => asignatura.Creditos)" />
+                </div>
+
+                <!-- Aula -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Aula</strong></label>
+                    <InputText class="form-control"
+                               @bind-Value="asignatura.Aula" />
+                    <ValidationMessage For="@(() => asignatura.Aula)" />
+                </div>
+
+                <!-- Mensaje de error del service -->
+                @if (!string.IsNullOrEmpty(Mensaje))
+                {
+                    <div class="alert alert-danger">
+                        @Mensaje
+                    </div>
+                }
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="card-footer text-center mt-2">
+                <a href="/Asignatura/Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-floppy"></i> Guardar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</EditForm>
+
+@code {
+
+    public Asignaturas asignatura { get; set; } = new Asignaturas();
+
+    public string Mensaje { get; set; } = string.Empty;
+
+    public async Task Guardar()
+    {
+        try
+        {
+            var creado = await asignaturasService.Guardar(asignatura);
+
+            if (creado)
+                navigationManager.NavigateTo("/Asignatura/Index");
+        }
+        catch (Exception ex)
+        {
+        
+            Mensaje = ex.Message;
+        }
+    }
+}
