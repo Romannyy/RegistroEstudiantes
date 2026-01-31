@@ -58,3 +58,24 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+span.badge.badge-azul {
+    background-color: #0D6EFD !important;
+}
+
+span.badge.badge-verde {
+    background-color: #198754 !important;
+}
+
+span.badge.badge-rojo {
+    background-color: #DC3545 !important;
+}
+
+span.badge.badge-otro {
+    background-color: gray !important;
+}
+
+span.badge.text-light {
+    color: #fff !important;
+}
+

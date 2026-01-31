@@ -13,14 +13,10 @@
 
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">Tipos de Puntos</h5>
-
-            <a href="/TiposPuntos/Create" class="btn btn-primary">
-                Crear
-            </a>
+            <a href="/TiposPuntos/Create" class="btn btn-primary">Crear</a>
         </div>
 
         <div class="card-body">
-
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
@@ -45,15 +41,8 @@
                                 <td>@item.ValorPuntos</td>
 
                                 <td>
-                                    <span class="badge text-light"
-                                          style="background-color:@item.Color">
-                                        @(item.Color switch
-                                        {
-                                                    "#0D6EFD" => "Azul",
-                                                    "#198754" => "Verde",
-                                                    "#DC3545" => "Rojo",
-                                            _ => "Otro"
-                                        })
+                                    <span class="badge text-light @ColorClase(item.Color)">
+                                        @NombreColor(item.Color)
                                     </span>
                                 </td>
 
@@ -62,15 +51,11 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           checked="@item.Activo"
-                                           disabled />
+                                    <input type="checkbox" class="form-check-input" checked="@item.Activo" disabled />
                                 </td>
 
                                 <td class="text-center">
-                                    <a href="/TiposPuntos/Edit/@item.TipoId"
-                                       class="btn btn-sm btn-primary">
+                                    <a href="/TiposPuntos/Edit/@item.TipoId" class="btn btn-sm btn-primary">
                                         Editar
                                     </a>
                                 </td>
@@ -79,13 +64,11 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
 
         <div class="card-footer text-end">
             <strong>Cantidad:</strong> @Lista.Count
         </div>
-
     </div>
 </div>
 
@@ -98,4 +81,23 @@
         Lista = await service.Listar(t => t.TipoId > 0);
     }
 
+    //Hice esto para no mezclar el css con los .razor, como usted exigió en la clase pasada.
+
+    // Devuelve la clase CSS según el color
+    private string ColorClase(string color) => color switch
+    {
+        "#0D6EFD" => "badge-azul",
+        "#198754" => "badge-verde",
+        "#DC3545" => "badge-rojo",
+        _ => "badge-otro"
+    };
+
+    // Devuelve el nombre del color para mostrar
+    private string NombreColor(string color) => color switch
+    {
+        "#0D6EFD" => "Azul",
+        "#198754" => "Verde",
+        "#DC3545" => "Rojo",
+        _ => "Otro"
+    };
 }
