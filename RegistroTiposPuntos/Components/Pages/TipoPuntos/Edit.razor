@@ -1,0 +1,142 @@
+﻿@page "/TiposPuntos/Edit/{TipoId:int}"
+
+@inject TiposPuntosService service
+@inject NavigationManager navigationManager
+
+@rendermode InteractiveServer
+
+<h3>Editar Tipo de Puntos</h3>
+
+@if (modelo == null || modelo.TipoId == 0)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="modelo" OnValidSubmit="Modificar">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <InputText class="form-control" @bind-Value="modelo.Nombre" />
+            <ValidationMessage For="@(() => modelo.Nombre)" class="text-danger small" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <InputText class="form-control" @bind-Value="modelo.Descripcion" />
+            <ValidationMessage For="@(() => modelo.Descripcion)" class="text-danger small" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Valor de Puntos</label>
+            <InputNumber class="form-control" @bind-Value="modelo.ValorPuntos" />
+            <ValidationMessage For="@(() => modelo.ValorPuntos)" class="text-danger small" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Color</label>
+            <InputSelect class="form-select" @bind-Value="modelo.Color">
+                <option value="">Seleccione</option>
+                <option value="#0D6EFD">Azul</option>
+                <option value="#198754">Verde</option>
+                <option value="#DC3545">Rojo</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => modelo.Color)" class="text-danger small" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Icono</label>
+            <InputSelect class="form-select" @bind-Value="modelo.Icono">
+                <option value="">Seleccione</option>
+                <option value="bi-star-fill">Estrella</option>
+                <option value="bi-award">Premio</option>
+                <option value="bi-lightning-fill">Rayo</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => modelo.Icono)" class="text-danger small" />
+        </div>
+
+        <div class="form-check mb-3">
+            <InputCheckbox class="form-check-input" @bind-Value="modelo.Activo" />
+            <label class="form-check-label">Activo</label>
+        </div>
+
+        <button type="button" class="btn btn-secondary" @onclick="Volver">
+            Volver
+        </button>
+
+        <button type="submit" class="btn btn-primary me-2">
+            Guardar
+        </button>
+
+        <button type="button"
+                class="btn btn-danger me-2"
+                @onclick="ConfirmarEliminar">
+            Eliminar
+        </button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(Mensaje))
+    {
+        <div class="alert alert-danger mt-3">@Mensaje</div>
+    }
+
+    @if (MostrarConfirmacion)
+    {
+        <div class="alert alert-warning mt-3">
+            <p>¿Deseas eliminar este tipo de puntos?</p>
+
+            <button class="btn btn-danger me-2" @onclick="Eliminar">
+                Sí, eliminar
+            </button>
+
+            <button class="btn btn-secondary" @onclick="CancelarEliminar">
+                Cancelar
+            </button>
+        </div>
+    }
+}
+
+@code {
+
+    [Parameter] public int TipoId { get; set; }
+
+    public TiposPuntos modelo { get; set; } = new();
+
+    public string Mensaje { get; set; } = string.Empty;
+    public bool MostrarConfirmacion { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var encontrado = await service.Buscar(TipoId);
+        if (encontrado != null)
+            modelo = encontrado;
+    }
+
+    public async Task Modificar()
+    {
+        try
+        {
+            if (await service.Guardar(modelo))
+                navigationManager.NavigateTo("/TiposPuntos/Index");
+        }
+        catch (Exception ex)
+        {
+            Mensaje = ex.Message;
+        }
+    }
+
+    public void ConfirmarEliminar() => MostrarConfirmacion = true;
+    public void CancelarEliminar() => MostrarConfirmacion = false;
+
+    public async Task Eliminar()
+    {
+        if (await service.Eliminar(modelo.TipoId))
+            navigationManager.NavigateTo("/TiposPuntos/Index");
+    }
+
+    public void Volver()
+    {
+        navigationManager.NavigateTo("/TiposPuntos/Index");
+    }
+}

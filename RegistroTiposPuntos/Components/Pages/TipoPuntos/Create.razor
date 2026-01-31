@@ -1,0 +1,108 @@
+﻿@page "/TiposPuntos/Create"
+
+@inject TiposPuntosService service
+@inject NavigationManager navigationManager
+
+@rendermode InteractiveServer
+
+<PageTitle>Crear Tipo de Puntos</PageTitle>
+
+<EditForm Model="modelo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Tipo de Puntos</h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.Nombre" />
+                    <ValidationMessage For="@(() => modelo.Nombre)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Descripción</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.Descripcion" />
+                    <ValidationMessage For="@(() => modelo.Descripcion)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Valor de Puntos</strong></label>
+                    <InputNumber class="form-control" @bind-Value="modelo.ValorPuntos" />
+                    <ValidationMessage For="@(() => modelo.ValorPuntos)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Color</strong></label>
+                    <InputSelect class="form-select" @bind-Value="modelo.Color">
+                        <option value="">Seleccione</option>
+                        <option value="Azul">Azul</option>
+                        <option value="Verde">Verde</option>
+                        <option value="Rojo">Rojo</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => modelo.Color)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Icono</strong></label>
+                    <InputSelect class="form-select" @bind-Value="modelo.Icono">
+                        <option value="">Seleccione</option>
+                        <option value="bi-star-fill">Estrella</option>
+                        <option value="bi-award">Premio</option>
+                        <option value="bi-lightning-fill">Rayo</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => modelo.Icono)" class="text-danger small" />
+                </div>
+
+                <div class="form-check mb-3">
+                    <InputCheckbox class="form-check-input" @bind-Value="modelo.Activo" />
+                    <label class="form-check-label">Activo</label>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Mensaje))
+                {
+                    <div class="alert alert-danger">
+                        @Mensaje
+                    </div>
+                }
+
+            </div>
+
+            <div class="card-footer text-center">
+                <a href="/TiposPuntos/Index" class="btn btn-secondary">
+                    Volver
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Guardar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</EditForm>
+
+@code {
+
+    public TiposPuntos modelo { get; set; } = new();
+
+    public string Mensaje { get; set; } = string.Empty;
+
+    public async Task Guardar()
+    {
+        try
+        {
+            if (await service.Guardar(modelo))
+                navigationManager.NavigateTo("/TiposPuntos/Index");
+        }
+        catch (Exception ex)
+        {
+            Mensaje = ex.Message;
+        }
+    }
+}

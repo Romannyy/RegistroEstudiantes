@@ -1,0 +1,101 @@
+﻿@page "/TiposPuntos/Index"
+@page "/"
+
+@inject TiposPuntosService service
+@inject NavigationManager navigationManager
+
+@rendermode InteractiveServer
+
+<PageTitle>Tipos de Puntos</PageTitle>
+
+<div class="container-fluid">
+    <div class="card shadow-lg">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Tipos de Puntos</h5>
+
+            <a href="/TiposPuntos/Create" class="btn btn-primary">
+                Crear
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Valor Puntos</th>
+                            <th>Color</th>
+                            <th class="text-center">Ícono</th>
+                            <th class="text-center">Activo</th>
+                            <th class="text-center">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Lista)
+                        {
+                            <tr>
+                                <td>@item.TipoId</td>
+                                <td>@item.Nombre</td>
+                                <td>@item.Descripcion</td>
+                                <td>@item.ValorPuntos</td>
+
+                                <td>
+                                    <span class="badge text-light"
+                                          style="background-color:@item.Color">
+                                        @(item.Color switch
+                                        {
+                                                    "#0D6EFD" => "Azul",
+                                                    "#198754" => "Verde",
+                                                    "#DC3545" => "Rojo",
+                                            _ => "Otro"
+                                        })
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <i class="bi @item.Icono fs-5"></i>
+                                </td>
+
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           checked="@item.Activo"
+                                           disabled />
+                                </td>
+
+                                <td class="text-center">
+                                    <a href="/TiposPuntos/Edit/@item.TipoId"
+                                       class="btn btn-sm btn-primary">
+                                        Editar
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="card-footer text-end">
+            <strong>Cantidad:</strong> @Lista.Count
+        </div>
+
+    </div>
+</div>
+
+@code {
+
+    public List<TiposPuntos> Lista { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Lista = await service.Listar(t => t.TipoId > 0);
+    }
+
+}
