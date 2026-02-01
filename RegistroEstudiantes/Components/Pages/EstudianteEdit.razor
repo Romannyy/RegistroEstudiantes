@@ -1,6 +1,7 @@
 ﻿@page "/Estudiante/Edit/{EstudianteId:int}"
 @inject EstudiantesService estudiantesService
 @inject NavigationManager navigationManager
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <h3>Editar Estudiante</h3>
@@ -34,7 +35,9 @@ else
             Guardar
         </button>
 
-        <button type="button" class="btn btn-danger" @onclick="Eliminar">
+        <button type="button"
+                class="btn btn-danger"
+                @onclick="Eliminar">
             Eliminar
         </button>
     </EditForm>
@@ -52,7 +55,7 @@ else
     [Parameter]
     public int EstudianteId { get; set; }
 
-    public Estudiantes estudiante { get; set; } = new Estudiantes();
+    public Estudiantes estudiante { get; set; } = new();
     public string Mensaje { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -76,13 +79,20 @@ else
         }
         catch (Exception ex)
         {
-            // Mensaje devuelto por la lógica de negocio
             Mensaje = ex.Message;
         }
     }
 
     public async Task Eliminar()
     {
+        bool confirmar = await JS.InvokeAsync<bool>(
+            "confirm",
+            "¿Seguro que deseas eliminar este estudiante?"
+        );
+
+        if (!confirmar)
+            return;
+
         var eliminado = await estudiantesService.Eliminar(estudiante.EstudianteId);
 
         if (eliminado)

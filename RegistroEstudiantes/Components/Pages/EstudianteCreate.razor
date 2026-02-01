@@ -7,45 +7,44 @@
 
 <EditForm Model="estudiante" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-    <ValidationSummary />
 
     <div class="container">
         <div class="card shadow-lg">
-            @* Cabecera del Formulario *@
+
             <div class="card-header text-center">
                 <h5 class="card-title">Crear Estudiante</h5>
             </div>
 
             <div class="card-body">
 
-                @* EstudianteId *@
                 <div class="mb-3">
                     <label class="form-label"><strong>EstudianteId</strong></label>
-                    <InputNumber class="form-control" @bind-Value="estudiante.EstudianteId" readonly />
+                    <InputNumber class="form-control"
+                                 @bind-Value="estudiante.EstudianteId"
+                                 readonly />
                 </div>
 
-                @* Nombres *@
                 <div class="mb-3">
                     <label class="form-label"><strong>Nombres</strong></label>
-                    <InputText class="form-control" @bind-Value="estudiante.Nombres" />
+                    <InputText class="form-control"
+                               @bind-Value="estudiante.Nombres" />
                     <ValidationMessage For="@(() => estudiante.Nombres)" />
                 </div>
 
-                @* Email *@
                 <div class="mb-3">
                     <label class="form-label"><strong>Email</strong></label>
-                    <InputText class="form-control" @bind-Value="estudiante.Email" />
+                    <InputText class="form-control"
+                               @bind-Value="estudiante.Email" />
                     <ValidationMessage For="@(() => estudiante.Email)" />
                 </div>
 
-                @* Edad *@
                 <div class="mb-3">
                     <label class="form-label"><strong>Edad</strong></label>
-                    <InputNumber class="form-control" @bind-Value="estudiante.Edad" />
+                    <InputNumber class="form-control"
+                                 @bind-Value="estudiante.Edad" />
                     <ValidationMessage For="@(() => estudiante.Edad)" />
                 </div>
 
-                @* Mensaje de error del service *@
                 @if (!string.IsNullOrEmpty(Mensaje))
                 {
                     <div class="alert alert-danger">
@@ -55,29 +54,29 @@
 
             </div>
 
-            @* Footer con Botones *@
             <div class="card-footer text-center mt-2">
                 <a href="/Estudiante/Index" class="btn btn-secondary">
-                    <span class="bi bi-arrow-left"></span> Volver
+                    <i class="bi bi-arrow-left"></i> Volver
                 </a>
+
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-floppy"></i> Guardar
                 </button>
             </div>
+
         </div>
     </div>
 </EditForm>
 
 @code {
 
-    public Estudiantes estudiante { get; set; } = new Estudiantes();
+    public Estudiantes estudiante { get; set; } = new();
     public string Mensaje { get; set; } = string.Empty;
 
     public async Task Guardar()
     {
         try
         {
-            // Se intenta guardar el registro usando la lógica del service
             var creado = await estudiantesService.Guardar(estudiante);
 
             if (creado)
@@ -85,7 +84,6 @@
         }
         catch (Exception ex)
         {
-            // Captura errores de validación como nombres duplicados
             Mensaje = ex.Message;
         }
     }
